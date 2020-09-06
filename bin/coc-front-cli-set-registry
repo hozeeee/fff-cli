@@ -1,0 +1,39 @@
+#! /usr/bin/env node
+
+const program = require('commander');
+const chalk = require('chalk');
+const Registry = require("../src/registry");
+
+// TODO: 用于设置本地镜像
+
+// program
+//   // .option("-l, --local", "使用本地全局 @vue/cli 4.1.*", false)
+//   .option("-R, --no-router", "使用 vue-router")
+//   .option("-l, --layout", "选择布局方式", "default")
+//   .option("-m, --multi-page", "使用多页面")
+//   .parse(process.argv);
+
+// npm config set registry=http://registry.npmjs.org
+// npm config set registry=http://registry.npm.taobao.org
+program
+  .option("-t, --taobao", "全局设置淘宝镜像源")
+  .option("-d, --def", "全局设置官方镜像源")
+  .option("-u, --url [url]", "全局设置指定的镜像仓库")
+  .parse(process.argv);
+
+// 获取参数
+let { taobao, def, url } = program;
+
+if ([taobao, def, url].filter(i => i).length !== 1) {
+  console.log(chalk.red("无效参数."));
+  console.log(
+    "若想设置淘宝镜像，请执行 %s .",
+    chalk.yellow("coc-front-cli set-registry -t"),
+  );
+  process.exit(1);
+}
+
+if (taobao) url = "http://registry.npm.taobao.org";
+if (def) url = "http://registry.npmjs.org";
+
+Registry.setter(url);

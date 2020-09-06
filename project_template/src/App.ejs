@@ -1,0 +1,41 @@
+<template>
+  <div id="app"><% if(needHeader){%>
+    <Header class="__top__" />
+    <%} %><div class="__center__"><% if(needAside || needCenterLeft){%>
+      <div class="__left__"><% if(needAside){%>
+        <Aside />
+        <%} %></div>
+      <%} %><div class="__content__">
+        <router-view />
+      </div><% if(needCenterRight){%>
+      <div class="__right__"></div>
+      <%} %></div><% if(needFooter){%>
+    <Footer class="__bottom__" /><%} %>
+  </div>
+</template>
+<% if(true){%><script><% if(needHeader){%>
+import Header from "@/header";<%} %><% if(needFooter){%>
+import Footer from "@/footer";<%} %><% if(needAside){%>
+import Aside from "@/aside";<%} %>
+export default {
+  name: "App",
+  components: {
+  <% if(needHeader){%>
+    Header,<%} %><% if(needFooter){%>
+    Footer,<%} %><% if(needAside){%>
+    Aside,<%} %>
+  },
+};
+</script><%} %>
+<style lang="less" scoped>
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  overflow: auto;
+  min-height: <%= minHeight %>;
+  min-width: <%= minWidth %>;
+}
+</style>

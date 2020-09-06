@@ -1,0 +1,15 @@
+#! /usr/bin/env node
+
+const program = require('commander');
+const Layout = require('../src/layoutList');
+
+// program
+//   // .option("-l, --local", "使用本地全局 @vue/cli 4.1.*", false)
+//   .option("-R, --no-router", "使用 vue-router")
+//   .option("-l, --layout", "选择布局方式", "default")
+//   .option("-m, --multi-page", "使用多页面")
+//   .parse(process.argv);
+
+const layout = new Layout();
+
+layout.showList();

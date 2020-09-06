@@ -1,0 +1,73 @@
+#! /usr/bin/env node
+
+// 用户获取控制台的参数
+const program = require('commander');
+const chalk = require('chalk');
+const { getCssLengthValue } = require("../src/utils");
+const Project = require('../src/project');
+const Layout = require('../src/layoutList');
+
+program
+  .option("-l, --layout [type]", "选择布局方式", "default")
+  .option("-H, --no-header", "布局不需要 header")
+  .option("-F, --no-footer", "布局不需要 footer")
+  .option("-mw, --min-width [number]", "页面的最小宽度", "unset")
+  .option("-mh, --min-height [number]", "页面的最小高度", "unset")
+  .option("-R, --no-router", "不使用 vue-router")
+  .option("-m, --multi-page", "使用多页面")
+  .parse(process.argv);
+
+if (program.args.length === 0) {
+  console.log(
+    chalk.red("必须指定项目名. 请使用： %s ."),
+    chalk.keyword("orange")("coc-front-cli create <app-name> [options]"),
+  );
+  process.exit(1);
+}
+
+// 项目名
+const projectName = program.args[0];
+
+// 获取参数
+let {
+  layout,
+  header: needHeader,
+  footer: needFooter,
+  router: needRouter,
+  multiPage,
+  minWidth,
+  minHeight
+} = program;
+
+// 判断 --min-width 和 --min-height 是否为有效值
+let _minWidth = getCssLengthValue(minWidth);
+let _minHeight = getCssLengthValue(minHeight);
+if (!_minWidth || !_minHeight) {
+  console.log(
+    chalk.red("参数值有误. %s 仅支持 px/rem/em/vw/vh 单位，默认单位是 px ."),
+    chalk.yellow("--min-width") + " 和 " + chalk.yellow("--min-height")
+  );
+  process.exit(1);
+}
+minWidth = _minWidth;
+minHeight = _minHeight;
+
+// 获取布局参数
+let _layout = Layout.getParams(layout);
+layout = Object.assign(_layout, { needHeader });
+if (!needFooter) layout.needFooter = needFooter;
+
+const project = new Project({
+  projectName,
+  layout,
+  minWidth,
+  minHeight,
+  multiPage,
+  needRouter,
+});
+
+project.create();
+
+
+
+
