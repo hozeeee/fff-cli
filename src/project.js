@@ -3,7 +3,7 @@ const fs = require("fs");
 const { exec } = require("child_process");
 // 提供选择或输入的界面
 const inquirer = require('inquirer');
-// 封装了 fs
+// 封装了原生 fs 模块
 const fse = require('fs-extra');
 // 在控制台输出五颜六色的文字
 const chalk = require('chalk');

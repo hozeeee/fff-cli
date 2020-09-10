@@ -1,20 +1,13 @@
-const {
-  exec
-} = require("child_process");
+const { exec } = require("child_process");
 const chalk = require("chalk");
 const ora = require('ora');
+const fse = require('fs-extra');
+const path = require("path");
 
 
-module.exports.sgtNpmRegistry = function () {
-
-}
-
-
-
-module.exports.setNpmRegistry = function (url) {
-  console.log();
+function getNpmRegistry() {
   return new Promise((resolve, reject) => {
-    const spinner = ora("获取当前 npm 仓库地址");
+    let spinner = ora("获取当前 npm 仓库地址");
     spinner.start();
     exec("npm config get registry", (error, stdout, stderr) => {
       if (error) {
@@ -28,15 +21,24 @@ module.exports.setNpmRegistry = function (url) {
         const oldUrl = stdout.replace(/[\u000D\u000A]/g, "");
         spinner.succeed(chalk.green("当前 npm 仓库地址为 ") + chalk.blue(oldUrl));
       }
+      resolve();
       spinner.stop();
-      setTimeout(() => {
-        resolve();
-      }, 500);
-    })
+      spinner = null;
+    });
+  });
+}
+module.exports.getNpmRegistry = getNpmRegistry;
+
+
+function setNpmRegistry(url) {
+  return getNpmRegistry().then(() => {
+    return fse.readJson(path.join(__dirname, "./NPM_REGISTRY.json"));
+  }).then((json) => {
+    if (json[url]) url = json[url];
+    return;
   }).then(() => {
-    console.log()
     return new Promise((resolve, reject) => {
-      const spinner = ora("设置 npm 仓库地址");
+      let spinner = ora("设置 npm 仓库地址");
       spinner.start();
       exec(`npm config set registry=${url}`, (error, stdout, stderr) => {
         if (error) {
@@ -46,11 +48,13 @@ module.exports.setNpmRegistry = function (url) {
           return;
         }
         if (stderr) console.error(stderr);
-        if (stdout) spinner.succeed(chalk.green("成功设置 npm 仓库地址为 ") + chalk.blue(url));
+        if (stdout) console.log(stdout);
+        spinner.succeed(chalk.green("成功修改 npm 仓库地址为 ") + chalk.yellow(url));
         spinner.stop();
         resolve();
       });
     });
   });
 }
+module.exports.setNpmRegistry = setNpmRegistry;
 
