@@ -1,19 +1,15 @@
 <template>
   <div id="app">
-    <Header class="__top__" />
-    <div class="__center__">
-      <div class="__left__">
-        <Aside />
-      </div>
-      <div class="__content__">
+    <Header />
+    <div class="_center">
+      <Aside />
+      <div class="_view_content">
         <router-view />
       </div>
-      <div class="__right__"></div>
     </div>
-    <Footer class="__bottom__" />
+    <Footer />
   </div>
 </template>
-
 <script>
 import Header from "@/header";
 import Footer from "@/footer";
@@ -28,7 +24,6 @@ export default {
   },
 };
 </script>
-
 <style lang="less" scoped>
 #app {
   width: 100%;
@@ -39,5 +34,20 @@ export default {
   overflow: auto;
   min-height: 600px;
   min-width: 900px;
+  ._center {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    ._view_content {
+      /* 含有 aside 的布局 */
+      flex: 1;
+      /* **************** */
+      /* "圣杯" 布局 */
+      // width: 900px;
+      // margin: 0 auto;
+      /* ********** */
+      height: 100%;
+    }
+  }
 }
 </style>

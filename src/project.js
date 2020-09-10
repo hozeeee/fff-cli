@@ -152,7 +152,7 @@ Project.prototype.createProjectFiles = function () {
     spinner.fail(chalk.red("构建项目文件失败"));
     console.error(err);
     console.log(chalk.blue("操作建议："));
-    console.log(chalk.blue("    - 重新安装 coc-front-cli"));
+    console.log(chalk.blue("    - 重新安装 fff-cli"));
     console.log(chalk.blue("    - 检查当前账号是否具有写入权限"));
     console.log(chalk.blue("    - 查看控制台打印的错误信息，找出原因"));
     throw err;

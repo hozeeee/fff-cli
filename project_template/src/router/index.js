@@ -1,16 +1,23 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Home from '@/views/Home.vue';
+import Vue from "vue";
+import VueRouter from "vue-router";
+import "./route.component.config.js";
 
 Vue.use(VueRouter);
 
-export default new VueRouter({
-	mode: 'history',
-	routes: [
-		{ path: '/', name: "home", component: Home },
-	]
-});
+const router = new VueRouter({
+  mode: "history",
 
+  // 路由的配置在 aside 组件中生成
+  routes: [
+    // // TODO: 这部分改成配置
+    // {
+    //   path: '/',
+    //   name: "home",
+    //   component: Vue.component("home") // 组件的注册请在 route.component.config.js 配置
+    // }
+  ]
+
+});
 
 
 // // 全局前置守卫
@@ -19,3 +26,5 @@ export default new VueRouter({
 // router.beforeEach((to, from, next) => { })
 // // 全局后置钩子
 // router.afterEach((to, from) => { })
+
+export default router;

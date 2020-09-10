@@ -1,6 +1,6 @@
 <template>
   <div class="home_container">
-    <span style="font-size:60px; line-height:160px;">home</span>
+    <span style="font-size:60px; line-height:160px;">{{ $route.meta.title || $route.name }}</span>
   </div>
 </template>
 <style lang="less" scoped>

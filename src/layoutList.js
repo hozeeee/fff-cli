@@ -139,7 +139,6 @@ Layout.getParams = function (type) {
       needCenterRight: true
     }
 
-
     default: return {
       needHeader: true,
       needFooter: false,
@@ -149,6 +148,5 @@ Layout.getParams = function (type) {
     }
   }
 }
-
 
 module.exports = Layout;

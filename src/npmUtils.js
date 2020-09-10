@@ -1,12 +1,17 @@
-const { exec } = require("child_process");
+const {
+  exec
+} = require("child_process");
 const chalk = require("chalk");
 const ora = require('ora');
 
-// 只提供静态方法
-function Registry() { }
+
+module.exports.sgtNpmRegistry = function () {
+
+}
 
 
-Registry.setter = function (url) {
+
+module.exports.setNpmRegistry = function (url) {
   console.log();
   return new Promise((resolve, reject) => {
     const spinner = ora("获取当前 npm 仓库地址");
@@ -49,5 +54,3 @@ Registry.setter = function (url) {
   });
 }
 
-
-module.exports = Registry;

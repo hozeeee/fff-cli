@@ -13,14 +13,14 @@ program
   .option("-F, --no-footer", "布局不需要 footer")
   .option("-mw, --min-width [number]", "页面的最小宽度", "unset")
   .option("-mh, --min-height [number]", "页面的最小高度", "unset")
-  .option("-R, --no-router", "不使用 vue-router")
+  // .option("-R, --no-router", "不使用 vue-router")
   .option("-m, --multi-page", "使用多页面")
   .parse(process.argv);
 
 if (program.args.length === 0) {
   console.log(
     chalk.red("必须指定项目名. 请使用： %s ."),
-    chalk.keyword("orange")("coc-front-cli create <app-name> [options]"),
+    chalk.keyword("orange")("fff-cli create <app-name> [options]"),
   );
   process.exit(1);
 }
@@ -33,7 +33,7 @@ let {
   layout,
   header: needHeader,
   footer: needFooter,
-  router: needRouter,
+  // router: needRouter,
   multiPage,
   minWidth,
   minHeight
@@ -63,7 +63,7 @@ const project = new Project({
   minWidth,
   minHeight,
   multiPage,
-  needRouter,
+  // needRouter,
 });
 
 project.create();
