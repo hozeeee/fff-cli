@@ -1,4 +1,6 @@
-const { exec } = require("child_process");
+const {
+  exec
+} = require("child_process");
 const chalk = require("chalk");
 const ora = require('ora');
 const fse = require('fs-extra');
@@ -38,7 +40,7 @@ function setNpmRegistry(url) {
     return;
   }).then(() => {
     return new Promise((resolve, reject) => {
-      let spinner = ora("设置 npm 仓库地址");
+      const spinner = ora("设置 npm 仓库地址");
       spinner.start();
       exec(`npm config set registry=${url}`, (error, stdout, stderr) => {
         if (error) {
@@ -58,3 +60,15 @@ function setNpmRegistry(url) {
 }
 module.exports.setNpmRegistry = setNpmRegistry;
 
+
+
+/**
+node
+node-gyp
+npm
+git
+python
+java
+ANDROID_HOME
+JAVA_HOME
+ */

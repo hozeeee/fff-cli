@@ -115,38 +115,32 @@ Layout.prototype.showList = function () {
 }
 
 // 获取对应的模式的参数
-Layout.getParams = function (type) {
+Layout.getParams = function (type, needHeader, needFooter) {
+  const result = {
+    needHeader: true,
+    needFooter: false,
+    needAside: true,
+    isGrail: false
+  };
+  if (typeof needHeader !== "boolean") needHeader = result.needHeader;
+  if (typeof needFooter !== "boolean") needFooter = result.needFooter;
   switch (type) {
-    case "default-no-aside": return {
-      needHeader: true,
-      needFooter: false,
-      needCenterLeft: true,
-      needAside: true,
-      needCenterRight: false
-    }
-    case "default-footer": return {
-      needHeader: true,
-      needFooter: true,
-      needCenterLeft: true,
-      needAside: true,
-      needCenterRight: false
-    }
-    case "grail": return {
-      needHeader: true,
-      needFooter: true,
-      needCenterLeft: true,
-      needAside: false,
-      needCenterRight: true
-    }
+    case "default-footer":
+      result.needFooter = true;
+      break;
+    case "grail":
+      result.needFooter = true;
+      result.needAside = false;
+      result.isGrail = true;
+      break;
 
-    default: return {
-      needHeader: true,
-      needFooter: false,
-      needCenterLeft: true,
-      needAside: true,
-      needCenterRight: false
-    }
+    case "default-no-aside":
+    default:
+      null;
   }
+  result.needHeader = needHeader;
+  if (!needFooter) result.needFooter = needFooter;
+  return result;
 }
 
 module.exports = Layout;

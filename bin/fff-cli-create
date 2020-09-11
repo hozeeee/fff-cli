@@ -3,17 +3,18 @@
 // 用户获取控制台的参数
 const program = require('commander');
 const chalk = require('chalk');
-const { getCssLengthValue } = require("../src/utils");
+const {
+  getCssLengthValue
+} = require("../src/utils");
 const Project = require('../src/project');
 const Layout = require('../src/layoutList');
 
 program
-  .option("-l, --layout [type]", "选择布局方式", "default")
-  .option("-H, --no-header", "布局不需要 header")
-  .option("-F, --no-footer", "布局不需要 footer")
-  .option("-mw, --min-width [number]", "页面的最小宽度", "unset")
-  .option("-mh, --min-height [number]", "页面的最小高度", "unset")
-  // .option("-R, --no-router", "不使用 vue-router")
+  .option("-l, --layout [type]", '选择布局方式, "layout-list"命令查看可用布局', "default")
+  .option("-H, --no-header", '布局不需要"header"')
+  .option("-F, --no-footer", '布局不需要"footer"')
+  .option("-mw, --min-width [number]", "页面的最小宽度", "900")
+  .option("-mh, --min-height [number]", "页面的最小高度", "600")
   .option("-m, --multi-page", "使用多页面")
   .parse(process.argv);
 
@@ -33,7 +34,6 @@ let {
   layout,
   header: needHeader,
   footer: needFooter,
-  // router: needRouter,
   multiPage,
   minWidth,
   minHeight
@@ -53,9 +53,7 @@ minWidth = _minWidth;
 minHeight = _minHeight;
 
 // 获取布局参数
-let _layout = Layout.getParams(layout);
-layout = Object.assign(_layout, { needHeader });
-if (!needFooter) layout.needFooter = needFooter;
+layout = Layout.getParams(layout, needHeader, needFooter);
 
 const project = new Project({
   projectName,
@@ -63,11 +61,6 @@ const project = new Project({
   minWidth,
   minHeight,
   multiPage,
-  // needRouter,
 });
 
 project.create();
-
-
-
-

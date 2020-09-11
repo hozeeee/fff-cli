@@ -12,13 +12,11 @@ let npmRegistryStr = "";
 for (let key in npmRegistryList) {
   npmRegistryStr += "    [" + key + "] " + npmRegistryList[key] + " \r\n"
 }
-// npm config set registry=http://registry.npmjs.org
-// npm config set registry=http://registry.npm.taobao.org
-program
-  .option("-s-r, --set-registry [type|url]", '设置全局 npm 镜像源\r\n' + npmRegistryStr)
-  .option("-g-r, --get-registry", "查看当前全局设置的 npm 镜像源")
-  .parse(process.argv);
 
+program
+  .option("-sr, --set-registry [type|url]", '设置全局 npm 镜像源\r\n' + npmRegistryStr)
+  .option("-gr, --get-registry", "查看当前全局设置的 npm 镜像源")
+  .parse(process.argv);
 
 const argvFieldNames = ["setRegistry", "getRegistry"];
 const argvMap = {}
