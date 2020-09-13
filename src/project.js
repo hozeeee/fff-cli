@@ -73,7 +73,7 @@ Project.prototype.checkNodeJsVersion = function () {
 Project.prototype.mkProjectDir = function () {
   const { projectName } = this.config;
   const projectPath = path.join(process.cwd(), projectName);
-  Object.assign(this.config, {projectPath});
+  Object.assign(this.config, { projectPath });
   return new Promise((resolve, reject) => {
     const spinner = ora("创建项目");
     const { projectPath } = this.config;
@@ -109,17 +109,17 @@ Project.prototype.mkProjectDir = function () {
 };
 
 
-Project.prototype.downloadGitTemplate = function() {
+Project.prototype.downloadGitTemplate = function () {
   const { projectPath } = this.config;
   const spinner = ora("正在下载模板，请稍等...");
   spinner.start();
-  if(!projectPath) {
+  if (!projectPath) {
     console.log(chalk.red("项目路径无效"))
     return Promise.reject();
   }
-  return new Promise((resolve,reject)=>{
-    gitDownloader(TEMPLATE_GIT_REPOSITORY, projectPath,{clone:true},err=>{
-      if(err) {
+  return new Promise((resolve, reject) => {
+    gitDownloader(TEMPLATE_GIT_REPOSITORY, projectPath, { clone: true }, err => {
+      if (err) {
         spinner.fail(chalk.red("模板下载失败，请检查网络"));
         console.error(err.message);
         reject();
@@ -135,9 +135,9 @@ Project.prototype.downloadGitTemplate = function() {
 Project.prototype.createProjectFiles = function () {
   const { projectName, projectPath, layout, minWidth, minHeight, multiPage } = this.config;
   const spinner = ora("构建项目文件");
-  (()=>{
-    return new Promise((resolve,reject)=>{
-      try{
+  (() => {
+    return new Promise((resolve, reject) => {
+      try {
         spinner.start();
         // 删除多余文件
         const delFilePaths = REJECT_FILES.map(i => path.join(projectPath, i));
@@ -146,11 +146,11 @@ Project.prototype.createProjectFiles = function () {
         if (!layout.needAside) delFilePaths.push(path.join(projectPath, "./src/aside"));
         if (!multiPage) delFilePaths.push(path.join(projectPath, "./src/otherPages"));
         resolve(delFilePaths);
-      }catch(e){
+      } catch (e) {
         reject(e);
       }
     })
-  })().then((delFilePaths)=>{
+  })().then((delFilePaths) => {
     return Promise.all(delFilePaths.map(path => fse.remove(path))).then(() => {
       // 生成 App.vue
       const inputFile = path.join(projectPath, "./src/App.ejs");
@@ -162,10 +162,10 @@ Project.prototype.createProjectFiles = function () {
     const inputFile = path.join(projectPath, "./vue.config.ejs");
     const outputFile = path.join(projectPath, "./vue.config.js");
     return renderFile(inputFile, outputFile, { multiPage });
-  }).then(()=>{
+  }).then(() => {
     // 删除 .ejs 文件
-    const ejsFiles = ["./src/App.ejs","./vue.config.ejs"];
-    return Promise.all(ejsFiles.map(i=>path.join(projectPath,i)).map(path => fse.remove(path)));
+    const ejsFiles = ["./src/App.ejs", "./vue.config.ejs"];
+    return Promise.all(ejsFiles.map(i => path.join(projectPath, i)).map(path => fse.remove(path)));
   }).then(() => {
     // 修改 package.json
     return fse.readJson(path.join(projectPath, "./package.json"));
@@ -184,6 +184,7 @@ Project.prototype.createProjectFiles = function () {
     console.log(chalk.blue("操作建议："));
     console.log(chalk.blue("    - 重新安装 fff-cli"));
     console.log(chalk.blue("    - 检查当前账号是否具有写入权限"));
+    console.log(chalk.blue("    - 更新 fff-cli 到最新版"));
     console.log(chalk.blue("    - 查看控制台打印的错误信息，找出原因"));
     throw err;
   })
@@ -213,18 +214,18 @@ Project.prototype.installPackage = function () {
 
 Project.prototype.printDependencies = function () {
   console.log(chalk.green.bold("添加的依赖列表如下："))
-  let tableData,output;
+  let tableData, output;
   console.log("dependencies:");
   tableData = [["包名", "版本", "描述"]];
-  for (let key in dependencies){
-    tableData.push([key,dependencies[key], dependenciesDescript[key]||""].map(i=>chalk.green(i)))
+  for (let key in dependencies) {
+    tableData.push([key, dependencies[key], dependenciesDescript[key] || ""].map(i => chalk.green(i)))
   }
   output = tableCreater(tableData);
   console.log(chalk.blue(output));
   console.log("devDependencies:");
   tableData = [["包名", "版本", "描述"]];
-  for (let key in devDependencies){
-    tableData.push([key,devDependencies[key], dependenciesDescript[key]||""].map(i=>chalk.green(i)))
+  for (let key in devDependencies) {
+    tableData.push([key, devDependencies[key], dependenciesDescript[key] || ""].map(i => chalk.green(i)))
   }
   output = tableCreater(tableData);
   console.log(chalk.blue(output));
@@ -232,7 +233,7 @@ Project.prototype.printDependencies = function () {
 }
 
 
-Project.prototype.printEndTips = function(){
+Project.prototype.printEndTips = function () {
   const { projectName } = this.config;
   console.log("请运行 %s 启动项目", chalk.yellow(`cd ${projectName} && npm run serve`));
 }
