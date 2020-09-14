@@ -15,7 +15,7 @@ program
   .option("-F, --no-footer", '布局不需要"footer"')
   .option("-mw, --min-width [number]", "页面的最小宽度", "900")
   .option("-mh, --min-height [number]", "页面的最小高度", "600")
-  .option("-m, --multi-page", "使用多页面")
+  .option("-mp, --multi-page", "使用多页面")
   .parse(process.argv);
 
 if (program.args.length === 0) {
@@ -53,13 +53,16 @@ minWidth = _minWidth;
 minHeight = _minHeight;
 
 // 获取布局参数
-layout = Layout.getParams(layout, needHeader, needFooter);
+layout = Layout.getParams(layout, {
+  needHeader,
+  needFooter,
+  minWidth,
+  minHeight
+});
 
 const project = new Project({
   projectName,
   layout,
-  minWidth,
-  minHeight,
   multiPage,
 });
 

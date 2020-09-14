@@ -1,8 +1,9 @@
-
 const fs = require("fs");
 const path = require("path");
 const ejs = require("ejs"); // 模板引擎
-const { exec } = require('child_process');
+const {
+  exec
+} = require('child_process');
 const ora = require('ora');
 
 
@@ -30,3 +31,16 @@ module.exports.getCssLengthValue = function (str) {
   return null;
 }
 
+
+const versionRegExp = /^(\d+)\.(\d+)\.(\d+)$/;
+module.exports.compareVersion = function (v1, v2) {
+  const match1 = versionRegExp.exec(v1);
+  const match2 = versionRegExp.exec(v2);
+  if (!match1 || !match2) throw '对比的版本号必须是 x.y.z 格式';
+  for (let index of Array(3).fill().map((item, idx) => idx + 1)) {
+    let tmp = match1[index] - match2[index];
+    if (tmp === 0) continue;
+    else return tmp;
+  }
+  return 0;
+}

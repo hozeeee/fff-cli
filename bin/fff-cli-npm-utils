@@ -7,7 +7,7 @@ const path = require("path");
 const { setNpmRegistry, getNpmRegistry } = require("../src/npmUtils");
 
 
-const npmRegistryList = fse.readJsonSync(path.join(__dirname, "../src/NPM_REGISTRY.json"));
+const npmRegistryList = require(path.join(__dirname, "../src/config/NPM_REGISTRY.js"))
 let npmRegistryStr = "";
 for (let key in npmRegistryList) {
   npmRegistryStr += "    [" + key + "] " + npmRegistryList[key] + " \r\n"

@@ -112,15 +112,50 @@ Layout.prototype.showList = function () {
   console.log(chalk.yellow("   │               ") + "footer" + chalk.yellow("                │"));
   console.log(chalk.yellow("   ╰─────────────────────────────────────╯"));
 
+  /**
+    mobile
+   ╭───────────────────╮
+   │      header       │
+   ├───────────────────┤
+   │                   │
+   │                   │
+   │                   │
+   │       view        │
+   │                   │
+   │                   │
+   │                   │
+   ╰───────────────────╯
+   */
+  console.log("mobile" + ":");
+  console.log(chalk.yellow("   ╭───────────────────╮"));
+  console.log(chalk.yellow("   │      ") + "header" + chalk.yellow("       │"));
+  console.log(chalk.yellow("   ├───────────────────┤"));
+  console.log(chalk.yellow("   │                   │"));
+  console.log(chalk.yellow("   │                   │"));
+  console.log(chalk.yellow("   │                   │"));
+  console.log(chalk.yellow("   │       ") + "view" + chalk.yellow("        │"));
+  console.log(chalk.yellow("   │                   │"));
+  console.log(chalk.yellow("   │                   │"));
+  console.log(chalk.yellow("   │                   │"));
+  console.log(chalk.yellow("   ╰───────────────────╯"));
+
 }
 
 // 获取对应的模式的参数
-Layout.getParams = function (type, needHeader, needFooter) {
-  const result = {
+Layout.getParams = function (type, {
+  needHeader,
+  needFooter,
+  minWidth,
+  minHeight
+}) {
+  let result = {
     needHeader: true,
     needFooter: false,
     needAside: true,
-    isGrail: false
+    isGrail: false,
+    isMobile: false,
+    minWidth,
+    minHeight
   };
   if (typeof needHeader !== "boolean") needHeader = result.needHeader;
   if (typeof needFooter !== "boolean") needFooter = result.needFooter;
@@ -132,6 +167,12 @@ Layout.getParams = function (type, needHeader, needFooter) {
       result.needFooter = true;
       result.needAside = false;
       result.isGrail = true;
+      break;
+    case "mobile":
+      result.needAside = false;
+      result.isMobile = true;
+      result.minWidth = "unset";
+      result.minHeight = "unset";
       break;
 
     case "default-no-aside":

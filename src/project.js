@@ -16,9 +16,10 @@ const gitDownloader = require('download-git-repo');
 // 控制台输出表格
 const { table: tableCreater } = require("table");
 // 自己的代码
-const { renderFile } = require('./utils');
-const { TEMPLATE_GIT_REPOSITORY, REJECT_FILES } = require("./_CONSTANTS");
-const { dependencies, devDependencies, dependenciesDescript } = require("./_PROJECT_DEPENDENCIES");
+const { renderFile, compareVersion } = require('./utils');
+const { TEMPLATE_GIT_REPOSITORY } = require("../config/CONSTANTS");
+const { pcDependencies, pcDevDependencies, mobileDependencies, mobileDevDependencies, dependenciesDescript } = require("../config/PROJECT_DEPENDENCIES");
+const { COMMON_REJECT_FILES, PC_REJECT_FILES, MOBILE_REJECT_FILES } = require("../config/REJECT_FILES");
 
 
 // 初始化参数
@@ -28,13 +29,15 @@ function Project(options) {
 
 Project.prototype.create = function () {
   this.checkNodeJsVersion().then(() => {
+    return this.checkMyCliVersion();
+  }).then(()=>{
     return this.mkProjectDir();
   }).then(() => {
     return this.downloadGitTemplate();
   }).then(() => {
     return this.createProjectFiles();
   }).then(() => {
-    return this.installPackage();
+    // return this.installPackage();
   }).then(() => {
     return this.printDependencies();
   }).then(() => {
@@ -67,6 +70,37 @@ Project.prototype.checkNodeJsVersion = function () {
       spinner.stop();
     });
   });
+}
+
+
+Project.prototype.checkMyCliVersion = function (){
+  return fse.readJson(path.join(__dirname, "../package.json")).then(packageObj=>{
+    const currentVersion = packageObj.version;
+    console.log(chalk.green("当前 fff-cli 版本为 ") + chalk.blue(currentVersion));
+    return Promise.resolve(currentVersion);
+  }).then(currentVersion=>{
+    return new Promise((resolve) => {
+      const spinner = ora("获取最新 fff-cli 最新版本号");
+      spinner.start();
+      exec("npm view fff-cli version", (error, stdout, stderr) => {
+        if (error) {
+          spinner.fail(chalk.yellow("无法获取最新 fff-cli 版本号"));
+          console.error(error);
+          resolve();
+          return;
+        }
+        if (stderr) console.error(stderr);
+        if (stdout) {
+          const lastVersion = stdout.replace(/[\u000D\u000A]/g, "");
+          let tmp = compareVersion(currentVersion,lastVersion);
+          if(tmp < 0) spinner.warn(chalk.yellow(`建议升级到最新版本(${lastVersion})，否则可能导致创建失败`));
+          else spinner.succeed(chalk.green("当前 fff-cli 版本已是最新版"));
+        }
+        resolve();
+        spinner.stop();
+      });
+    });
+  })
 }
 
 
@@ -133,45 +167,60 @@ Project.prototype.downloadGitTemplate = function () {
 
 
 Project.prototype.createProjectFiles = function () {
-  const { projectName, projectPath, layout, minWidth, minHeight, multiPage } = this.config;
+  const { projectName, projectPath, layout, multiPage } = this.config;
+  // 模板文件
+  const ejsFiles = [
+    {source: "./src/App.ejs", target: "./src/App.vue"},
+    {source: "./src/main.ejs", target: "./src/main.js"},
+    {source: "./vue.config.ejs", target: "./vue.config.js"},
+    {source: "./src/views/home.ejs", target: "./src/views/home.vue"},
+    {source: "./src/router/route.component.config.ejs", target: "./src/router/route.component.config.js"},
+    {source: "./src/router/index.ejs", target: "./src/router/index.js"}
+  ];
   const spinner = ora("构建项目文件");
   (() => {
     return new Promise((resolve, reject) => {
       try {
         spinner.start();
         // 删除多余文件
-        const delFilePaths = REJECT_FILES.map(i => path.join(projectPath, i));
-        if (!layout.needHeader) delFilePaths.push(path.join(projectPath, "./src/header"));
-        if (!layout.needFooter) delFilePaths.push(path.join(projectPath, "./src/footer"));
-        if (!layout.needAside) delFilePaths.push(path.join(projectPath, "./src/aside"));
-        if (!multiPage) delFilePaths.push(path.join(projectPath, "./src/otherPages"));
+        let delFilePaths = [...COMMON_REJECT_FILES];
+        if (!layout.needHeader) delFilePaths.push("./src/header");
+        if (!layout.needFooter) delFilePaths.push("./src/footer");
+        if (!layout.needAside) delFilePaths.push("./src/aside");
+        if (!multiPage) delFilePaths.push("./src/otherPages");
+        if(layout.isMobile) delFilePaths.push(...MOBILE_REJECT_FILES);
+        else delFilePaths.push(...PC_REJECT_FILES);
+        delFilePaths = delFilePaths.map(i => path.join(projectPath, i));
         resolve(delFilePaths);
       } catch (e) {
         reject(e);
       }
     })
   })().then((delFilePaths) => {
-    return Promise.all(delFilePaths.map(path => fse.remove(path))).then(() => {
-      // 生成 App.vue
-      const inputFile = path.join(projectPath, "./src/App.ejs");
-      const outputFile = path.join(projectPath, "./src/App.vue");
-      return renderFile(inputFile, outputFile, { ...layout, minWidth, minHeight });
-    })
+    return Promise.all(delFilePaths.map(path => fse.remove(path)))
   }).then(() => {
-    // 生成 vue.config.js
-    const inputFile = path.join(projectPath, "./vue.config.ejs");
-    const outputFile = path.join(projectPath, "./vue.config.js");
-    return renderFile(inputFile, outputFile, { multiPage });
+    return Promise.all(ejsFiles.map(i => {
+      const inputFile = path.join(projectPath, i.source);
+      const outputFile = path.join(projectPath, i.target);
+      return renderFile(inputFile, outputFile, { ...layout, multiPage });
+    }));
   }).then(() => {
     // 删除 .ejs 文件
-    const ejsFiles = ["./src/App.ejs", "./vue.config.ejs"];
-    return Promise.all(ejsFiles.map(i => path.join(projectPath, i)).map(path => fse.remove(path)));
+    return Promise.all(ejsFiles.map(i => path.join(projectPath, i.source)).map(path => fse.remove(path)));
   }).then(() => {
     // 修改 package.json
     return fse.readJson(path.join(projectPath, "./package.json"));
   }).then(packageObj => {
     packageObj = packageObj || {}
     packageObj.name = projectName;
+    let dependencies, devDependencies;
+    if(layout.isMobile) {
+      dependencies = mobileDependencies;
+      devDependencies = mobileDevDependencies;
+    } else {
+      dependencies = pcDependencies;
+      devDependencies = pcDevDependencies;
+    }
     packageObj.dependencies = dependencies;
     packageObj.devDependencies = devDependencies;
     return fse.writeJson(path.join(projectPath, "./package.json"), packageObj);
@@ -186,7 +235,7 @@ Project.prototype.createProjectFiles = function () {
     console.log(chalk.blue("    - 检查当前账号是否具有写入权限"));
     console.log(chalk.blue("    - 更新 fff-cli 到最新版"));
     console.log(chalk.blue("    - 查看控制台打印的错误信息，找出原因"));
-    throw err;
+    return Promise.reject(err);
   })
 }
 
@@ -205,7 +254,7 @@ Project.prototype.installPackage = function () {
         return;
       }
       spinner.succeed(chalk.green("安装依赖成功"));
-      console.log(`${stderr}${stdout}`);
+      // console.log(`${stderr}${stdout}`);
       resolve();
     });
   });
@@ -213,6 +262,17 @@ Project.prototype.installPackage = function () {
 
 
 Project.prototype.printDependencies = function () {
+  const { layout } = this.config;
+  let dependencies, devDependencies;
+  console.log("layout.isMobile", layout.isMobile);
+  if(layout.isMobile) {
+    dependencies = mobileDependencies;
+    devDependencies = mobileDevDependencies;
+  } else {
+    dependencies = pcDependencies;
+    devDependencies = pcDevDependencies;
+  }
+  console.log("dependencies",dependencies,devDependencies);
   console.log(chalk.green.bold("添加的依赖列表如下："))
   let tableData, output;
   console.log("dependencies:");

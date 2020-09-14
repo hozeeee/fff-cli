@@ -1,15 +1,13 @@
-module.exports.dependencies = {
+const commonDependencies = {
   "ant-design-vue": "^1.6.5",
   "axios": "^0.20.0",
   "core-js": "^3.6.5",
   "dayjs": "^1.8.35",
-  "perfect-scrollbar": "^1.5.0",
   "vue": "^2.6.11",
   "vue-router": "^3.4.3",
   "vuex": "^3.5.1"
 }
-
-module.exports.devDependencies = {
+const commonDevDependencies = {
   "@vue/cli-plugin-babel": "~4.5.0",
   "@vue/cli-plugin-eslint": "~4.5.0",
   "@vue/cli-service": "~4.5.0",
@@ -22,6 +20,25 @@ module.exports.devDependencies = {
   "less": "^3.12.2",
   "less-loader": "^7.0.1",
   "vue-template-compiler": "^2.6.11"
+}
+
+// PC端
+module.exports.pcDependencies = {
+  ...commonDependencies,
+  "perfect-scrollbar": "^1.5.0"
+}
+module.exports.pcDevDependencies = {
+  ...commonDevDependencies
+}
+
+// 移动端
+module.exports.mobileDependencies = {
+  ...commonDependencies,
+  "hammerjs": "^2.0.8",
+  "swiper": "^6.2.0"
+}
+module.exports.mobileDevDependencies = {
+  ...commonDevDependencies
 }
 
 // 用于对上面两部分的依赖添加 描述

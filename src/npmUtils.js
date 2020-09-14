@@ -34,7 +34,8 @@ module.exports.getNpmRegistry = getNpmRegistry;
 
 function setNpmRegistry(url) {
   return getNpmRegistry().then(() => {
-    return fse.readJson(path.join(__dirname, "./NPM_REGISTRY.json"));
+    let json = require(path.join(__dirname, "../config/NPM_REGISTRY.js"));
+    return Promise.resolve(json);
   }).then((json) => {
     if (json[url]) url = json[url];
     return;
