@@ -160,6 +160,9 @@ Layout.getParams = function (type, {
   if (typeof needHeader !== "boolean") needHeader = result.needHeader;
   if (typeof needFooter !== "boolean") needFooter = result.needFooter;
   switch (type) {
+    case "default-no-aside":
+      result.needAside = false;
+      break;
     case "default-footer":
       result.needFooter = true;
       break;
@@ -175,7 +178,7 @@ Layout.getParams = function (type, {
       result.minHeight = "unset";
       break;
 
-    case "default-no-aside":
+    case "default":
     default:
       null;
   }

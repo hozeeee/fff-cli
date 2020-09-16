@@ -1,0 +1,7 @@
+#! /usr/bin/env node
+
+const Layout = require('../src/layout');
+
+const layout = new Layout();
+
+layout.showList();

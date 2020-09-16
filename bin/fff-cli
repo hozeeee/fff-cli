@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 const program = require('commander');
 // const chalk = require('chalk');
 
@@ -5,8 +7,9 @@ program
   .version(require("../package").version)
   .usage("<command> [options]")
   .command("create <app-name> [options]", "创建一个新项目")
-  .command("layout-list", "查看可用的布局")
-  .command("npm-utils", "收集可能用到但不常用的 npm 命令")
+  .command("layout", "查看可用的布局")
+  .command("npm-tools", "收集可能用到但不常用的 npm 命令")
+  .command("versions", "获取 Node.js 、 npm 等软件的版本")
   .parse(process.argv);
 
 

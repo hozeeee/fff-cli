@@ -5,6 +5,9 @@ const chalk = require("chalk");
 const ora = require('ora');
 const fse = require('fs-extra');
 const path = require("path");
+const {
+  execPromise
+} = require("./utils");
 
 
 function getNpmRegistry() {
@@ -63,13 +66,18 @@ module.exports.setNpmRegistry = setNpmRegistry;
 
 
 
-/**
-node
-node-gyp
-npm
-git
-python
-java
-ANDROID_HOME
-JAVA_HOME
- */
+function cleanNpmCacheForce() {
+  const spinner = ora("正在清除 npm 缓存...");
+  spinner.start();
+  return execPromise("npm cache clean --force").then(({
+    stderr,
+    stdout
+  }) => {
+    spinner.succeed(chalk.green("清除 npm 缓存成功"));
+    console.log(stderr + stdout);
+  }).catch(err => {
+    spinner.fail(chalk.red("清除 npm 缓存失败"));
+    console.error(err);
+  });
+}
+module.exports.cleanNpmCacheForce = cleanNpmCacheForce;

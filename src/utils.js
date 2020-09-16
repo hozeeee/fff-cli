@@ -1,10 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const ejs = require("ejs"); // 模板引擎
+const ejs = require("ejs");
 const {
   exec
 } = require('child_process');
-const ora = require('ora');
 
 
 // 使用 ejs 输出内容
@@ -43,4 +42,14 @@ module.exports.compareVersion = function (v1, v2) {
     else return tmp;
   }
   return 0;
+}
+
+
+module.exports.execPromise = function (command){
+  return new Promise((resolve,reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if(error) reject(error);
+      else resolve({ stdout, stderr });
+    });
+  });
 }

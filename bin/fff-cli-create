@@ -1,13 +1,12 @@
 #! /usr/bin/env node
 
-// 用户获取控制台的参数
 const program = require('commander');
 const chalk = require('chalk');
 const {
   getCssLengthValue
 } = require("../src/utils");
 const Project = require('../src/project');
-const Layout = require('../src/layoutList');
+const Layout = require('../src/layout');
 
 program
   .option("-l, --layout [type]", '选择布局方式, "layout-list"命令查看可用布局', "default")
@@ -26,10 +25,8 @@ if (program.args.length === 0) {
   process.exit(1);
 }
 
-// 项目名
 const projectName = program.args[0];
 
-// 获取参数
 let {
   layout,
   header: needHeader,
@@ -52,7 +49,6 @@ if (!_minWidth || !_minHeight) {
 minWidth = _minWidth;
 minHeight = _minHeight;
 
-// 获取布局参数
 layout = Layout.getParams(layout, {
   needHeader,
   needFooter,

@@ -1,21 +1,14 @@
 // const memFs = require('mem-fs');
 // const editor = require('mem-fs-editor');
+// const inquirer = require('inquirer');
 const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
-// 提供选择或输入的界面
-const inquirer = require('inquirer');
-// 封装了原生 fs 模块
 const fse = require('fs-extra');
-// 在控制台输出五颜六色的文字
 const chalk = require('chalk');
-// 提供"loading"显示的控制台输出
 const ora = require('ora');
-// 从 git 仓库下载代码
 const gitDownloader = require('download-git-repo');
-// 控制台输出表格
 const { table: tableCreater } = require("table");
-// 自己的代码
 const { renderFile, compareVersion } = require('./utils');
 const { TEMPLATE_GIT_REPOSITORY } = require("../config/CONSTANTS");
 const { pcDependencies, pcDevDependencies, mobileDependencies, mobileDevDependencies, dependenciesDescript } = require("../config/PROJECT_DEPENDENCIES");
@@ -37,7 +30,7 @@ Project.prototype.create = function () {
   }).then(() => {
     return this.createProjectFiles();
   }).then(() => {
-    // return this.installPackage();
+    return this.installPackage();
   }).then(() => {
     return this.printDependencies();
   }).then(() => {
@@ -272,8 +265,7 @@ Project.prototype.printDependencies = function () {
     dependencies = pcDependencies;
     devDependencies = pcDevDependencies;
   }
-  console.log("dependencies",dependencies,devDependencies);
-  console.log(chalk.green.bold("添加的依赖列表如下："))
+  console.log(chalk.green.bold("依赖列表如下："))
   let tableData, output;
   console.log("dependencies:");
   tableData = [["包名", "版本", "描述"]];

@@ -4,10 +4,10 @@ const program = require('commander');
 const chalk = require('chalk');
 const fse = require('fs-extra');
 const path = require("path");
-const { setNpmRegistry, getNpmRegistry } = require("../src/npmUtils");
+const { setNpmRegistry, getNpmRegistry, cleanNpmCacheForce } = require("../src/npmTools");
 
 
-const npmRegistryList = require(path.join(__dirname, "../src/config/NPM_REGISTRY.js"))
+const npmRegistryList = require(path.join(__dirname, "../config/NPM_REGISTRY.js"))
 let npmRegistryStr = "";
 for (let key in npmRegistryList) {
   npmRegistryStr += "    [" + key + "] " + npmRegistryList[key] + " \r\n"
@@ -16,9 +16,10 @@ for (let key in npmRegistryList) {
 program
   .option("-sr, --set-registry [type|url]", '设置全局 npm 镜像源\r\n' + npmRegistryStr)
   .option("-gr, --get-registry", "查看当前全局设置的 npm 镜像源")
+  .option("-cc, --clean-cache", "强制清除 npm 缓存(npm@5+不推荐使用,除非你必须这么做)")
   .parse(process.argv);
 
-const argvFieldNames = ["setRegistry", "getRegistry"];
+const argvFieldNames = ["setRegistry", "getRegistry", "cleanCache"];
 const argvMap = {}
 
 for (let key of argvFieldNames) {
@@ -41,6 +42,9 @@ switch (_keys[0]) {
     break;
   case "getRegistry":
     getNpmRegistry();
+    break;
+  case "cleanCache":
+    cleanNpmCacheForce();
     break;
   default: null;
 }
