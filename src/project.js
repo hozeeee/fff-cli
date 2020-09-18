@@ -3,16 +3,35 @@
 // const inquirer = require('inquirer');
 const path = require("path");
 const fs = require("fs");
-const { exec } = require("child_process");
+const {
+  exec
+} = require("child_process");
 const fse = require('fs-extra');
 const chalk = require('chalk');
 const ora = require('ora');
 const gitDownloader = require('download-git-repo');
-const { table: tableCreater } = require("table");
-const { renderFile, compareVersion } = require('./utils');
-const { TEMPLATE_GIT_REPOSITORY } = require("../config/CONSTANTS");
-const { pcDependencies, pcDevDependencies, mobileDependencies, mobileDevDependencies, dependenciesDescript } = require("../config/PROJECT_DEPENDENCIES");
-const { COMMON_REJECT_FILES, PC_REJECT_FILES, MOBILE_REJECT_FILES } = require("../config/REJECT_FILES");
+const {
+  table: tableCreater
+} = require("table");
+const {
+  renderFile,
+  compareVersion
+} = require('./utils');
+const {
+  TEMPLATE_GIT_REPOSITORY
+} = require("../config/CONSTANTS");
+const {
+  pcDependencies,
+  pcDevDependencies,
+  mobileDependencies,
+  mobileDevDependencies,
+  dependenciesDescript
+} = require("../config/PROJECT_DEPENDENCIES");
+const {
+  COMMON_REJECT_FILES,
+  PC_REJECT_FILES,
+  MOBILE_REJECT_FILES
+} = require("../config/REJECT_FILES");
 
 
 // 初始化参数
@@ -23,7 +42,7 @@ function Project(options) {
 Project.prototype.create = function () {
   this.checkNodeJsVersion().then(() => {
     return this.checkMyCliVersion();
-  }).then(()=>{
+  }).then(() => {
     return this.mkProjectDir();
   }).then(() => {
     return this.downloadGitTemplate();
@@ -66,12 +85,12 @@ Project.prototype.checkNodeJsVersion = function () {
 }
 
 
-Project.prototype.checkMyCliVersion = function (){
-  return fse.readJson(path.join(__dirname, "../package.json")).then(packageObj=>{
+Project.prototype.checkMyCliVersion = function () {
+  return fse.readJson(path.join(__dirname, "../package.json")).then(packageObj => {
     const currentVersion = packageObj.version;
     console.log(chalk.green("当前 fff-cli 版本为 ") + chalk.blue(currentVersion));
     return Promise.resolve(currentVersion);
-  }).then(currentVersion=>{
+  }).then(currentVersion => {
     return new Promise((resolve) => {
       const spinner = ora("获取最新 fff-cli 最新版本号");
       spinner.start();
@@ -85,8 +104,8 @@ Project.prototype.checkMyCliVersion = function (){
         if (stderr) console.error(stderr);
         if (stdout) {
           const lastVersion = stdout.replace(/[\u000D\u000A]/g, "");
-          let tmp = compareVersion(currentVersion,lastVersion);
-          if(tmp < 0) spinner.warn(chalk.yellow(`建议升级到最新版本(${lastVersion})，否则可能导致创建失败`));
+          let tmp = compareVersion(currentVersion, lastVersion);
+          if (tmp < 0) spinner.warn(chalk.yellow(`建议升级到最新版本(${lastVersion})，否则可能导致创建失败`));
           else spinner.succeed(chalk.green("当前 fff-cli 版本已是最新版"));
         }
         resolve();
@@ -98,12 +117,18 @@ Project.prototype.checkMyCliVersion = function (){
 
 
 Project.prototype.mkProjectDir = function () {
-  const { projectName } = this.config;
+  const {
+    projectName
+  } = this.config;
   const projectPath = path.join(process.cwd(), projectName);
-  Object.assign(this.config, { projectPath });
+  Object.assign(this.config, {
+    projectPath
+  });
   return new Promise((resolve, reject) => {
     const spinner = ora("创建项目");
-    const { projectPath } = this.config;
+    const {
+      projectPath
+    } = this.config;
     spinner.start();
     // 检测项目名是否合法
     if (!projectName) {
@@ -137,7 +162,9 @@ Project.prototype.mkProjectDir = function () {
 
 
 Project.prototype.downloadGitTemplate = function () {
-  const { projectPath } = this.config;
+  const {
+    projectPath
+  } = this.config;
   const spinner = ora("正在下载模板，请稍等...");
   spinner.start();
   if (!projectPath) {
@@ -145,7 +172,9 @@ Project.prototype.downloadGitTemplate = function () {
     return Promise.reject();
   }
   return new Promise((resolve, reject) => {
-    gitDownloader(TEMPLATE_GIT_REPOSITORY, projectPath, { clone: true }, err => {
+    gitDownloader(TEMPLATE_GIT_REPOSITORY, projectPath, {
+      clone: true
+    }, err => {
       if (err) {
         spinner.fail(chalk.red("模板下载失败，请检查网络"));
         console.error(err.message);
@@ -160,28 +189,57 @@ Project.prototype.downloadGitTemplate = function () {
 
 
 Project.prototype.createProjectFiles = function () {
-  const { projectName, projectPath, layout, multiPage } = this.config;
+  const {
+    projectName,
+    projectPath,
+    layout,
+    multiPage
+  } = this.config;
   // 模板文件
-  const ejsFiles = [
-    {source: "./src/App.ejs", target: "./src/App.vue"},
-    {source: "./src/main.ejs", target: "./src/main.js"},
-    {source: "./vue.config.ejs", target: "./vue.config.js"},
-    {source: "./src/views/home.ejs", target: "./src/views/home.vue"},
-    {source: "./src/router/route.component.config.ejs", target: "./src/router/route.component.config.js"},
-    {source: "./src/router/index.ejs", target: "./src/router/index.js"}
-  ];
+  let ejsFiles = [];
+  // const ejsFiles = [{
+  //     source: "./src/App.ejs",
+  //     target: "./src/App.vue"
+  //   },
+  //   {
+  //     source: "./src/main.ejs",
+  //     target: "./src/main.js"
+  //   },
+  //   {
+  //     source: "./vue.config.ejs",
+  //     target: "./vue.config.js"
+  //   },
+  //   {
+  //     source: "./src/views/home.ejs",
+  //     target: "./src/views/home.vue"
+  //   },
+  //   {
+  //     source: "./src/router/route.component.config.ejs",
+  //     target: "./src/router/route.component.config.js"
+  //   },
+  //   {
+  //     source: "./src/router/index.ejs",
+  //     target: "./src/router/index.js"
+  //   },
+  //   {
+  //     source: ".src/header/index.ejs",
+  //     target: ".src/header/index.vue"
+  //   }
+  // ];
   const spinner = ora("构建项目文件");
-  (() => {
+  spinner.start();
+  return fse.readJson(path.join(projectPath, "./.ejs.files.json")).then(_ejsFiles => {
+    ejsFiles = _ejsFiles;
     return new Promise((resolve, reject) => {
       try {
-        spinner.start();
         // 删除多余文件
         let delFilePaths = [...COMMON_REJECT_FILES];
+        delFilePaths.push("./.ejs.files.json");
         if (!layout.needHeader) delFilePaths.push("./src/header");
         if (!layout.needFooter) delFilePaths.push("./src/footer");
         if (!layout.needAside) delFilePaths.push("./src/aside");
         if (!multiPage) delFilePaths.push("./src/otherPages");
-        if(layout.isMobile) delFilePaths.push(...MOBILE_REJECT_FILES);
+        if (layout.isMobile) delFilePaths.push(...MOBILE_REJECT_FILES);
         else delFilePaths.push(...PC_REJECT_FILES);
         delFilePaths = delFilePaths.map(i => path.join(projectPath, i));
         resolve(delFilePaths);
@@ -189,13 +247,16 @@ Project.prototype.createProjectFiles = function () {
         reject(e);
       }
     })
-  })().then((delFilePaths) => {
+  }).then((delFilePaths) => {
     return Promise.all(delFilePaths.map(path => fse.remove(path)))
   }).then(() => {
     return Promise.all(ejsFiles.map(i => {
       const inputFile = path.join(projectPath, i.source);
       const outputFile = path.join(projectPath, i.target);
-      return renderFile(inputFile, outputFile, { ...layout, multiPage });
+      return renderFile(inputFile, outputFile, {
+        ...layout,
+        multiPage
+      });
     }));
   }).then(() => {
     // 删除 .ejs 文件
@@ -207,7 +268,7 @@ Project.prototype.createProjectFiles = function () {
     packageObj = packageObj || {}
     packageObj.name = projectName;
     let dependencies, devDependencies;
-    if(layout.isMobile) {
+    if (layout.isMobile) {
       dependencies = mobileDependencies;
       devDependencies = mobileDevDependencies;
     } else {
@@ -234,8 +295,15 @@ Project.prototype.createProjectFiles = function () {
 
 
 Project.prototype.installPackage = function () {
-  const { projectName } = this.config;
+  const {
+    projectName
+  } = this.config;
   const projectPath = path.join(process.cwd(), projectName);
+  // 如果下载超过 10 分钟，提示用户自己下载
+  let timer = setTimeout(() => {
+    console.log()
+    console.log(chalk.yellow("(下载已超过 10 分钟，建议先退出，删除 node_modules 和 package-lock.json ，然后再手动安装.)"));
+  }, 10 * 60 * 1000);
   const spinner = ora("安装依赖");
   spinner.start();
   return new Promise((resolve, reject) => {
@@ -249,16 +317,20 @@ Project.prototype.installPackage = function () {
       spinner.succeed(chalk.green("安装依赖成功"));
       // console.log(`${stderr}${stdout}`);
       resolve();
+      clearTimeout(timer);
+      timer = null;
     });
   });
 }
 
 
 Project.prototype.printDependencies = function () {
-  const { layout } = this.config;
+  const {
+    layout
+  } = this.config;
   let dependencies, devDependencies;
   console.log("layout.isMobile", layout.isMobile);
-  if(layout.isMobile) {
+  if (layout.isMobile) {
     dependencies = mobileDependencies;
     devDependencies = mobileDevDependencies;
   } else {
@@ -268,14 +340,18 @@ Project.prototype.printDependencies = function () {
   console.log(chalk.green.bold("依赖列表如下："))
   let tableData, output;
   console.log("dependencies:");
-  tableData = [["包名", "版本", "描述"]];
+  tableData = [
+    ["包名", "版本", "描述"]
+  ];
   for (let key in dependencies) {
     tableData.push([key, dependencies[key], dependenciesDescript[key] || ""].map(i => chalk.green(i)))
   }
   output = tableCreater(tableData);
   console.log(chalk.blue(output));
   console.log("devDependencies:");
-  tableData = [["包名", "版本", "描述"]];
+  tableData = [
+    ["包名", "版本", "描述"]
+  ];
   for (let key in devDependencies) {
     tableData.push([key, devDependencies[key], dependenciesDescript[key] || ""].map(i => chalk.green(i)))
   }
@@ -286,7 +362,9 @@ Project.prototype.printDependencies = function () {
 
 
 Project.prototype.printEndTips = function () {
-  const { projectName } = this.config;
+  const {
+    projectName
+  } = this.config;
   console.log("请运行 %s 启动项目", chalk.yellow(`cd ${projectName} && npm run serve`));
 }
 
